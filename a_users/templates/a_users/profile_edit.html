@@ -1,0 +1,212 @@
+{% extends 'layouts/box.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-lg mx-auto text-center">
+    {% if onboarding %}
+    <h1 class="text-[32px] font-bold mb-10">Complete your Profile</h1>
+    {% else %}
+    <h1 class="text-[32px] font-bold mb-10">Edit your Profile</h1>
+    {% endif %}
+    {% comment %} <p class="text-gray-600 mb-8">Update your profile information</p> {% endcomment %}
+
+    <div class="flex flex-col items-center mb-8">
+        <!-- Avatar Section -->
+        <div class="relative group">
+            {% if user.profile.image %}
+                <img id="avatar" class="w-32 h-32 rounded-full object-cover ring-4 ring-primary/20" 
+                     src="{{ user.profile.image.url }}" 
+                     alt="Profile picture" />
+            {% else %}
+                <div id="avatar" class="w-32 h-32 rounded-full ring-4 ring-primary/20 bg-gray-200 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+            {% endif %}
+            <div class="absolute inset-0 flex items-center justify-center rounded-full 
+                        bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <h2 id="displayname" class="text-xl font-semibold">
+                {{ user.profile.display_name|default:"Your Name" }}
+            </h2>
+            <div class="text-gray-400">@{{ user.username }}</div>
+        </div>
+    </div>
+
+    <!-- Profile Form -->
+    <form method="POST" enctype="multipart/form-data" class="space-y-6 text-left">
+        {% csrf_token %}
+        
+        <!-- Avatar Field -->
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
+            <div class="flex items-stretch gap-3">
+                <label for="id_image" 
+                       class="flex-grow flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700
+                              border border-gray-200 rounded-lg cursor-pointer
+                              hover:border-gray-300 transition-colors">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    <span class="truncate">Choose a file</span>
+                </label>
+                
+                <button 
+                    type="button" 
+                    id="remove-avatar" 
+                    class="flex items-center justify-center h-[42px] w-[42px] 
+                        text-white bg-primary rounded-lg shadow-lg 
+                        hover:bg-primary-hover transition-colors"
+                    style="box-sizing: border-box; padding: 0; text-align: center;"
+                >
+                    <svg 
+                        class="w-5 h-5" 
+                        style="margin: auto; display: block;" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24" 
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            stroke-width="2" 
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
+                        />
+                    </svg>
+                </button>
+
+
+
+                
+                <input type="file" id="id_image" name="image" class="hidden" accept="image/*" />
+                <input type="hidden" id="id_clear_image" name="clear_image" value="" />
+            </div>
+        </div>
+
+        <!-- Display Name Field -->
+        <div class="space-y-1">
+            <label for="id_display_name" class="block text-sm font-medium text-gray-700 mb-2">
+                Display Name
+            </label>
+            <input type="text" id="id_display_name" name="display_name" 
+                   class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg
+                          focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                   placeholder="Enter your display name"
+                   value="{{ user.profile.display_name|default:'' }}" />
+        </div>
+
+        <!-- Info Field -->
+        <div class="space-y-1">
+            <label for="id_info" class="block text-sm font-medium text-gray-700 mb-2">
+                Info
+            </label>
+            <textarea id="id_info" name="info" rows="4"
+                      class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg
+                             focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">{{ user.profile.info|default:'' }}</textarea>
+        </div>
+
+        <div class="flex gap-3 justify-center mt-8">
+            <button type="submit" 
+                    class="px-6 py-2.5 glass-button bg-gradient-to-r from-primary to-accent text-white
+                           hover:from-primary-hover hover:to-accent">
+                Save Changes
+            </button>
+            {% if onboarding %}
+            {% comment %} <a class="px-6 py-2.5 glass-button hover:bg-gray-50" href="{% url 'home' %}">
+                Skip
+            </a> {% endcomment %}
+            {% else %}
+            <a class="px-6 py-2.5 glass-button hover:bg-gray-50" href="{{ request.META.HTTP_REFERER }}">
+                Cancel
+            </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+    const fileInput = document.getElementById('id_image');
+    const avatarImage = document.getElementById('avatar');
+    const removeButton = document.getElementById('remove-avatar');
+    const clearImageInput = document.getElementById('id_clear_image');
+    let originalSrc = avatarImage.tagName.toLowerCase() === 'img' ? avatarImage.src : null;
+
+    function showDefaultAvatar() {
+        const defaultAvatar = document.createElement('div');
+        defaultAvatar.id = 'avatar';
+        defaultAvatar.className = 'w-32 h-32 rounded-full ring-4 ring-primary/20 bg-gray-200 flex items-center justify-center';
+        defaultAvatar.innerHTML = `
+            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        `;
+        if (avatarImage.parentNode) {
+            avatarImage.parentNode.replaceChild(defaultAvatar, avatarImage);
+        }
+    }
+
+    if (fileInput && avatarImage) {
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.includes('image')) {
+                const url = URL.createObjectURL(file);
+                if (avatarImage.tagName.toLowerCase() === 'img') {
+                    avatarImage.src = url;
+                } else {
+                    // Replace div with img
+                    const img = document.createElement('img');
+                    img.id = 'avatar';
+                    img.className = 'w-32 h-32 rounded-full object-cover ring-4 ring-primary/20';
+                    img.src = url;
+                    img.alt = 'Profile picture';
+                    avatarImage.parentNode.replaceChild(img, avatarImage);
+                }
+                removeButton.classList.remove('hidden');
+                removeButton.classList.add('flex');
+                clearImageInput.value = ''; // Reset clear flag when new image selected
+            }
+        });
+
+        removeButton.addEventListener('click', () => {
+            fileInput.value = '';
+            clearImageInput.value = 'true'; // Set clear flag when removing image
+            
+            // Revoke any existing object URLs to prevent memory leaks
+            if (avatarImage.tagName.toLowerCase() === 'img') {
+                URL.revokeObjectURL(avatarImage.src);
+            }
+            
+            showDefaultAvatar();
+            removeButton.classList.remove('flex');
+            removeButton.classList.add('hidden');
+        });
+    }
+
+    // Display Name Update
+    const displayNameInput = document.getElementById('id_display_name');
+    const displayNameOutput = document.getElementById('displayname');
+
+    if (displayNameInput && displayNameOutput) {
+        displayNameInput.addEventListener('input', (event) => {
+            displayNameOutput.innerText = event.target.value || 'Your Name';
+        });
+    }
+</script>
+{% endblock %}

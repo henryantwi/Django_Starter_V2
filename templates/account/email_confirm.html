@@ -1,0 +1,35 @@
+{% extends "layouts/box.html" %}
+
+{% load i18n %}
+{% load account %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold text-center mb-6">{% trans "Confirm Email Address" %}</h1>
+
+    {% if confirmation %}
+        {% user_display confirmation.email_address.user as user_display %}
+        
+        <p class="text-gray-600 mb-6 text-center">
+            {% blocktrans with confirmation.email_address.email as email %}
+                Please confirm that <span class="gradient-text font-semibold">{{ email }}</span> is an email address for user {{ user_display }}.
+            {% endblocktrans %}
+        </p>
+
+        <form method="post" action="{% url 'account_confirm_email' confirmation.key %}" class="space-y-4">
+            {% csrf_token %}
+            <button type="submit" class="w-full py-2 px-4 glass-button bg-gradient-to-r from-primary to-accent text-white
+            hover:from-primary-hover hover:to-accent">
+                {% trans "Confirm" %}
+            </button>
+        </form>
+    {% else %}
+        {% url 'account_email' as email_url %}
+        
+        <p class="text-red-600 text-center mb-6">
+            {% blocktrans %}
+                This email confirmation link has expired or is invalid. Please 
+                <a href="{{ email_url }}" class="text-primary font-semibold">request a new email confirmation</a>.
+            {% endblocktrans %}
+        </p>
+    {% endif %}
+{% endblock %}

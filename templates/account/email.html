@@ -1,0 +1,62 @@
+{% extends "layouts/box.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold text-center mb-6">{% trans "Email Addresses" %}</h1>
+    
+    {% if user.emailaddress_set.all %}
+    <div class="space-y-4">
+        <p class="text-gray-600 text-center">{% trans 'The following email addresses are associated with your account:' %}</p>
+        
+        <form action="{% url 'account_email' %}" class="space-y-4" method="post">
+            {% csrf_token %}
+            
+            <div class="space-y-2">
+                {% for emailaddress in user.emailaddress_set.all %}
+                <div class="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-200">
+                    <input id="email_radio_{{forloop.counter}}" type="radio" name="email" 
+                           {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked"{% endif %} 
+                           value="{{emailaddress.email}}"/>
+                    
+                    <div class="flex-1">
+                        <label for="email_radio_{{forloop.counter}}" class="block font-medium text-gray-700">
+                            {{emailaddress.email}}
+                        </label>
+                        
+                        <div class="flex gap-2 mt-1">
+                            {% if emailaddress.verified %}
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">{% trans "Verified" %}</span>
+                            {% else %}
+                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">{% trans "Unverified" %}</span>
+                            {% endif %}
+                            
+                            {% if emailaddress.primary %}
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{% trans "Primary" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="flex gap-2">
+                <button class="flex-1 py-2 px-4 glass-button" type="submit" name="action_primary">{% trans 'Make Primary' %}</button>
+                <button class="flex-1 py-2 px-4 glass-button" type="submit" name="action_send">{% trans 'Re-send Verification' %}</button>
+                <button class="flex-1 py-2 px-4 glass-button button-red" type="submit" name="action_remove">{% trans 'Remove' %}</button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+
+    <h2 class="text-xl font-bold mt-8 mb-4">{% trans "Add Email Address" %}</h2>
+    
+    <form method="post" action="{% url 'account_email' %}" class="space-y-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="w-full py-2 px-4 glass-button bg-gradient-to-r from-primary to-accent text-white
+        hover:from-primary-hover hover:to-accent" name="action_add">
+            {% trans "Add Email" %}
+        </button>
+    </form>
+{% endblock %}

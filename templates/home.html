@@ -1,0 +1,29 @@
+{% extends 'layouts/blank.html' %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 blur-3xl"></div>
+        <div class="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-accent/20 to-transparent rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="glass-card p-12 max-w-3xl text-center space-y-8 relative">
+        <h1 class="text-7xl font-bold gradient-text">New Project</h1>
+        <p class="text-xl text-slate-600">
+            Build something amazing with modern design and powerful features.
+        </p>
+        <div class="flex items-center justify-center gap-4 pt-8">
+            <a href="#" class="glass-button bg-gradient-to-r from-primary to-accent text-white
+                              hover:from-primary-hover hover:to-accent px-8 py-4 animate-float">
+                Get Started
+            </a>
+            <a href="#" class="glass-button px-8 py-4">
+                Learn More
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+
