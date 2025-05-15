@@ -5,6 +5,9 @@ from email.utils import formataddr
 from decouple import config, Csv
 from django.urls import reverse_lazy
 
+from icecream import ic
+
+ic.disable()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,6 +25,7 @@ else:
     ALLOWED_HOSTS: list[str] = config("ENV_ALLOWED_HOSTS", cast=Csv())
 
 
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -31,27 +35,24 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_cleanup.apps.CleanupConfig",
     "storages",
-    
     "widget_tweaks",
     "django_htmx",
-    
     "django.contrib.sites",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
-    
     "a_home",
     "a_users",
 ]
 
-SITE_ID = config('SITE_ID', default=1, cast=int)
+SITE_ID = config("SITE_ID", default=1, cast=int)
 
-SITE_NAME = config('SITE_NAME', default="Site Name")
-SITE_DOMAIN = config('SITE_DOMAIN', default="site.domain")
+SITE_NAME = config("SITE_NAME", default="Site Name")
+SITE_DOMAIN = config("SITE_DOMAIN", default="site.domain")
 
-PROJECT_NAME = config('PROJECT_NAME', default="Project Name")
-PROJECT_DESCRIPTION = config('PROJECT_DESCRIPTION', default="Project Description")
+PROJECT_NAME = config("PROJECT_NAME", default="Project Name")
+PROJECT_DESCRIPTION = config("PROJECT_DESCRIPTION", default="Project Description")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -133,12 +134,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / "staticfiles-cdn"
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static"
-]
 
 # Session Settings
 if DEBUG:
@@ -148,9 +143,9 @@ else:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-SESSION_COOKIE_SAMESITE = 'Lax'  # or 'None' if you need cross-site cookies
-SESSION_COOKIE_NAME = 'sessionid'  # Django's default, but being explicit
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_SAMESITE = "Lax"  # or 'None' if you need cross-site cookies
+SESSION_COOKIE_NAME = "sessionid"  # Django's default, but being explicit
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 1209600  # 2 weeks, in seconds
 
 # Security Settings
@@ -169,7 +164,7 @@ ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL = "/a_users/settings/"
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_UNIQUE_EMAIL = True
 # ACCOUNT_EMAIL_SUBJECT_PREFIX = f"[{PROJECT_NAME}] "
 # ACCOUNT_EMAIL_SUBJECT_PREFIX = config("ACCOUNT_EMAIL_SUBJECT_PREFIX", default="")
@@ -187,8 +182,8 @@ SOCIALACCOUNT_QUERY_EMAIL = True
 if DEBUG or POSTGRES_LOCALLY is True or ENVIRONMENT == "development":
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.gmail.com"
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False
@@ -213,9 +208,28 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {
             "access_type": "online",
             "prompt": "select_account",
-        }
+        },
     }
 }
 
+# Static files (CSS, JavaScript, Images)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles-cdn"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
-from .cdn.conf import * # noqa
+# Media/Static storage configuration: local for development, S3 for production
+if DEBUG or ENVIRONMENT == "development":
+    # Local storage for development
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+else:
+    # Use S3/CDN config for production
+    from .cdn.conf import *  # noqa
