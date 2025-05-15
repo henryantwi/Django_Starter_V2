@@ -9,11 +9,15 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # image = models.ImageField(upload_to="avatars/", null=True, blank=True)
     image = ResizedImageField(
-        size=[600, 600],
-        quality=85,
+        size=[500, 500],  # Reduced size - better for avatars & performance
+        quality=95,       # Good balance of quality vs file size
+        crop=['middle', 'center'],  # Ensures face remains centered
+        force_format='JPEG',  # Consistent format
         upload_to="avatars/",
         null=True,
         blank=True,
+        default='avatars/default.jpg',  # Default image path
+        help_text="Profile picture, max 300x300 pixels"
     )
     display_name = models.CharField(max_length=50, null=True, blank=True)
     info = models.TextField(null=True, blank=True)

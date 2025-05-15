@@ -106,10 +106,10 @@ DATABASES = {
 
 if ENVIRONMENT == "production" or POSTGRES_LOCALLY is True:
     DATABASES["default"] = dj_database_url.parse(config("DATABASE_URL"))
-    DATABASES["default"]["CONN_MAX_AGE"] = 600  # 10 minutes
-    DATABASES["default"]["OPTIONS"] = {
-        "sslmode": "require",
-    }
+    # DATABASES["default"]["CONN_MAX_AGE"] = 600  # 10 minutes
+    # DATABASES["default"]["OPTIONS"] = {
+    #     "sslmode": "require",
+    # } 
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -212,16 +212,14 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-# Static files (CSS, JavaScript, Images)
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles-cdn"
-STATICFILES_DIRS = [BASE_DIR / "static"]
-
 # Media/Static storage configuration: local for development, S3 for production
 if DEBUG or ENVIRONMENT == "development":
-    # Local storage for development
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+    STATIC_URL = "/static/"
+    STATIC_ROOT = BASE_DIR / "staticfiles-cdn"
+    STATICFILES_DIRS = [BASE_DIR / "static"]
+
     STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -231,5 +229,10 @@ if DEBUG or ENVIRONMENT == "development":
         },
     }
 else:
-    # Use S3/CDN config for production
-    from .cdn.conf import *  # noqa
+    # Use Cloudflare R2 for production
+    from .cdn.conf import *  # Imports AWS_* variables and STORAGES dict
+
+    # These are critical for Django to correctly link static/media files via the CDN
+    STATIC_URL = f"{AWS_LOCATION}/static/"
+    MEDIA_URL = f"{AWS_LOCATION}/media/"
+
