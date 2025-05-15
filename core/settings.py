@@ -45,15 +45,13 @@ INSTALLED_APPS = [
     "a_users",
 ]
 
-SITE_ID = 1
+SITE_ID = config('SITE_ID', default=1, cast=int)
 
-SITE_NAME = "Your Project Name"
-SITE_DOMAIN = "yourproject.com"
+SITE_NAME = config('SITE_NAME', default="Site Name")
+SITE_DOMAIN = config('SITE_DOMAIN', default="site.domain")
 
-PROJECT_NAME = "Your Project Name"
-
-# DEFAULT_FROM_EMAIL = "noreply@yourproject.com"
-# EMAIL_SUBJECT_PREFIX = "[Your Project Name] "
+PROJECT_NAME = config('PROJECT_NAME', default="Project Name")
+PROJECT_DESCRIPTION = config('PROJECT_DESCRIPTION', default="Project Description")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -173,7 +171,10 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_SUBJECT_PREFIX = f"[{PROJECT_NAME}] "
+# ACCOUNT_EMAIL_SUBJECT_PREFIX = f"[{PROJECT_NAME}] "
+# ACCOUNT_EMAIL_SUBJECT_PREFIX = config("ACCOUNT_EMAIL_SUBJECT_PREFIX", default="")
+ACCOUNT_EMAIL_SUBJECT_PREFIX = ""
+
 
 # Social Account Settings
 SOCIALACCOUNT_ADAPTER = "a_users.adapters.CustomSocialAccountAdapter"
@@ -195,7 +196,7 @@ else:
     EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD")
     EMAIL_TIMEOUT = 30
     EMAIL_SUBJECT_PREFIX = config("EMAIL_SUBJECT_PREFIX")
-DEFAULT_FROM_EMAIL = formataddr(("Project Name", config("DEFAULT_FROM_EMAIL")))
+DEFAULT_FROM_EMAIL = formataddr((f"{PROJECT_NAME}", config("DEFAULT_FROM_EMAIL")))
 
 
 SOCIALACCOUNT_PROVIDERS = {
